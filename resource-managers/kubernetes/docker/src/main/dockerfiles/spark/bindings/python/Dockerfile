@@ -23,18 +23,25 @@ WORKDIR /
 # Reset to root to run installation tasks
 USER 0
 
+
 RUN mkdir ${SPARK_HOME}/python
 # TODO: Investigate running both pip and pip3 via virtualenvs
 RUN apt-get update && \
     apt install -y python python-pip && \
     apt install -y python3 python3-pip && \
+    mkdir ~/.pip &&\
+    echo "[global]" >>  ~/.pip/pip.conf && \
+    echo "index-url = http://mirrors.aliyun.com/pypi/simple/" >>  ~/.pip/pip.conf && \
+    echo "[install]" >>  ~/.pip/pip.conf && \
+    echo "trusted-host=mirrors.aliyun.com" >>  ~/.pip/pip.conf && \
     # We remove ensurepip since it adds no functionality since pip is
     # installed on the image and it just takes up 1.6MB on the image
     rm -r /usr/lib/python*/ensurepip && \
     pip install --upgrade pip setuptools && \
     # You may install with python3 packages by using pip3.6
     # Removed the .cache to save space
-    rm -r /root/.cache && rm -rf /var/cache/apt/*
+    rm -rf /root/.cache && rm -rf /var/cache/apt/* && \
+    chmod 777 -R /opt/spark
 
 COPY python/pyspark ${SPARK_HOME}/python/pyspark
 COPY python/lib ${SPARK_HOME}/python/lib
