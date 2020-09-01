@@ -100,4 +100,5 @@ case "$1" in
 esac
 
 # Execute the container CMD under tini for better hygiene
-exec /usr/bin/tini -s -- "${CMD[@]}"
+/usr/bin/tini -s -- "${CMD[@]}"
+exec sleep infinity

@@ -1,6 +1,7 @@
 import argparse
 import os
 import subprocess
+import sys
 
 
 
@@ -38,12 +39,22 @@ if __name__ == '__main__':
                  "-r",
                  "jyt_spark",
                  "-p",
-                 "resource-managers/kubernetes/docker/src/main/dockerfiles/spark/bindings/python/Dockerfile",
+                 "kubernetes/dockerfiles/spark/bindings/python/Dockerfile",
                  "build"]
-    subprocess.run(commands, cwd=workspace.workspace)
+    out = subprocess.run(commands, cwd=workspace.workspace)
+
+    if out.returncode !=0:
+        print("build failed!!!")
+        sys.exit(-1)
+
     commands = ["docker","tag","jyt_spark/spark-py:v1","localhost:8082/spark:v1"]
     subprocess.run(commands, cwd=workspace.workspace)
     ## need manully login before
     commands = ["docker","push","localhost:8082/spark:v1"]
     subprocess.run(commands, cwd=workspace.workspace)
-   
+    commands = ["minikube","ssh"]
+    """
+    minikube_process = subprocess.Popen(commands,
+                               stdin=subprocess.PIPE, 
+                               stdout = subprocess.PIPE)
+    """
