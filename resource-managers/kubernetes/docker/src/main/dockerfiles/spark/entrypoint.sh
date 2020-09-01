@@ -100,5 +100,11 @@ case "$1" in
 esac
 
 # Execute the container CMD under tini for better hygiene
-/usr/bin/tini -s -- "${CMD[@]}"
-exec sleep infinity
+JYT_DEPLOY_MODE="${JYT_DEPLOY_MODE:-Command}"
+echo "JYT_DEPLOY_MODE is" $JYT_DEPLOY_MODE
+if [ "$JYT_DEPLOY_MODE" == "Server" ]; then
+    /usr/bin/tini -s -- "${CMD[@]}"
+    exec sleep infinity 
+else
+    exec /usr/bin/tini -s -- "${CMD[@]}"
+fi
